@@ -13,8 +13,8 @@ services:
       - LOGLEVEL=debug
       - PORT=4891
         # - model=ggml-mpt-7b-chat.bin (WORKS)
-      - model=llama-2-7b-chat.ggmlv3.q4_0.bin
-        # - model=llama-2-7b-chat.ggmlv3.q8_0.bin (Breaks)
+        # - model=llama-2-7b-chat.ggmlv3.q4_0.bin
+      - model=llama-2-7b-chat.ggmlv3.q8_0.bin
       - inference_mode=cpu
     volumes:
       - './gpt4all_api/app:/app'
