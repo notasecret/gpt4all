@@ -165,7 +165,7 @@ async def completions(request: CompletionRequest):
             )
 
     else:
-
+        header = {"Content-Type": "application/json; charset: utf-8"}
         if request.model != settings.model:
             raise HTTPException(status_code=400,
                                 detail=f"The GPT4All inference server is booted to only infer: `{settings.model}`")
@@ -211,5 +211,6 @@ async def completions(request: CompletionRequest):
                     'prompt_tokens': 0,  # TODO how to compute this?
                     'completion_tokens': 0,
                     'total_tokens': 0
-                }
+                },
+                media_type="application/json; charset=utf-8"
             )
