@@ -111,9 +111,11 @@ async def completions(request: CompletionRequest, response: Response):
     '''
     Completes a GPT4All model response.
     '''
-    print("your headers: ", response.headers)
+    print("your media_type: ", response.media_type )
+    print("your charset: ", response.charset)
 
-    response.headers["content-type"] = "application/json; charset: utf-8"
+    response.media_type = "application/json"
+    response.charset = "utf-8"
     if settings.inference_mode == "gpu":
         params = request.dict(exclude={'model', 'prompt', 'max_tokens', 'n'})
         params["max_new_tokens"] = request.max_tokens
