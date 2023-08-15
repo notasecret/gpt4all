@@ -116,6 +116,8 @@ async def completions(request: CompletionRequest, response: Response):
 
     response.media_type = "application/json"
     response.charset = "utf-8"
+    print("your media_type: ", response.media_type )
+    print("your charset: ", response.charset)
     if settings.inference_mode == "gpu":
         params = request.dict(exclude={'model', 'prompt', 'max_tokens', 'n'})
         params["max_new_tokens"] = request.max_tokens
@@ -202,7 +204,7 @@ async def completions(request: CompletionRequest, response: Response):
             return StreamingResponse((response for response in stream_completion(output, base_chunk)),
                                      media_type="text/event-stream")
         else:
-            return CompletionResponse(
+            ret = CompletionResponse(
                 id=str(uuid4()),
                 created=time.time(),
                 model=request.model,
@@ -219,3 +221,6 @@ async def completions(request: CompletionRequest, response: Response):
                 },
                 media_type="application/json; charset=utf-8"
             )
+            content_type = f'application/json;charset=utf-8'
+            content = json.dumps(ret, ensure_ascii=False)
+            return Response(content=content, media_type=content_type)
