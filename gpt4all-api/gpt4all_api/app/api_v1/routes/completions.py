@@ -107,10 +107,11 @@ async def gpu_infer(payload, header):
             logger.error(f"Unexpected error: {e}")
 
 @router.post("/", response_model=CompletionResponse)
-async def completions(request: CompletionRequest):
+async def completions(request: CompletionRequest, response: Response):
     '''
     Completes a GPT4All model response.
     '''
+    response.headers["Content-Type"] = "application/json; charset: utf-8"
     if settings.inference_mode == "gpu":
         params = request.dict(exclude={'model', 'prompt', 'max_tokens', 'n'})
         params["max_new_tokens"] = request.max_tokens
