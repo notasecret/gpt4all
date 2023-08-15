@@ -116,7 +116,7 @@ async def completions(request: CompletionRequest):
         params["max_new_tokens"] = request.max_tokens
         params["num_return_sequences"] = request.n
 
-        header = {"Content-Type": "application/json"}
+        header = {"Content-Type": "application/json; charset: utf-8"}
         if isinstance(request.prompt, list):
             tasks = []
             for prompt in request.prompt:
