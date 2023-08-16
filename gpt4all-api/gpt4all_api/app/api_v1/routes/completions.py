@@ -222,5 +222,5 @@ async def completions(request: CompletionRequest, response: Response):
                 media_type="application/json; charset=utf-8"
             )
             content_type = f'application/json;charset=utf-8'
-            content = json.dumps(ret, ensure_ascii=False)
+            content = json.dumps(ret.__dict__, ensure_ascii=False)
             return Response(content=content, media_type=content_type)
