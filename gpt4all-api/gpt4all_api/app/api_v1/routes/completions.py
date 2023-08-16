@@ -210,7 +210,7 @@ async def completions(request: CompletionRequest, response: Response):
             ret_dict = {"id": "c6d471c3-d5bd-4fcb-a1be-54dfffa62e76",
                        "object": "text_completion",
                        "created": time.time(),
-                       "model": request.model(),
+                       "model": request.model,
                        "choices": [dict(CompletionChoice(
                     text=output,
                     index=0,
