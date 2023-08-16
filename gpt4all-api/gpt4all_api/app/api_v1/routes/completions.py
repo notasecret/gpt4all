@@ -63,6 +63,7 @@ class CompletionStreamResponse(BaseModel):
 
 router = APIRouter(prefix="/completions", tags=["Completion Endpoints"])
 
+
 def stream_completion(output: Iterable, base_response: CompletionStreamResponse):
     """
     Streams a GPT4All output to the client.
@@ -84,11 +85,12 @@ def stream_completion(output: Iterable, base_response: CompletionStreamResponse)
         ))]
         yield f"data: {json.dumps(dict(chunk))}\n\n"
 
+
 async def gpu_infer(payload, header):
     async with aiohttp.ClientSession() as session:
         try:
             async with session.post(
-                settings.hf_inference_server_host, headers=header, data=json.dumps(payload)
+                    settings.hf_inference_server_host, headers=header, data=json.dumps(payload)
             ) as response:
                 resp = await response.json()
             return resp
@@ -106,17 +108,18 @@ async def gpu_infer(payload, header):
             # Handle other unexpected exceptions
             logger.error(f"Unexpected error: {e}")
 
+
 @router.post("/", response_model=CompletionResponse)
 async def completions(request: CompletionRequest, response: Response):
     '''
     Completes a GPT4All model response.
     '''
-    print("your media_type: ", response.media_type )
+    print("your media_type: ", response.media_type)
     print("your charset: ", response.charset)
 
     response.media_type = "application/json"
     response.charset = "utf-8"
-    print("your media_type: ", response.media_type )
+    print("your media_type: ", response.media_type)
     print("your charset: ", response.charset)
     if settings.inference_mode == "gpu":
         params = request.dict(exclude={'model', 'prompt', 'max_tokens', 'n'})
@@ -204,23 +207,22 @@ async def completions(request: CompletionRequest, response: Response):
             return StreamingResponse((response for response in stream_completion(output, base_chunk)),
                                      media_type="text/event-stream")
         else:
-            ret = CompletionResponse(
-                id=str(uuid4()),
-                created=time.time(),
-                model=request.model,
-                choices=[dict(CompletionChoice(
+            ret_dict = {"id": "c6d471c3-d5bd-4fcb-a1be-54dfffa62e76",
+                       "object": "text_completion",
+                       "created": time.time(),
+                       "model": request.model(),
+                       "choices": [dict(CompletionChoice(
                     text=output,
                     index=0,
                     logprobs=-1,
                     finish_reason='stop'
                 ))],
-                usage={
-                    'prompt_tokens': 0,  # TODO how to compute this?
-                    'completion_tokens': 0,
-                    'total_tokens': 0
-                },
-                media_type="application/json; charset=utf-8"
-            )
+                "usage": {
+                    "prompt_tokens": 0,
+                    "completion_tokens": 0,
+                    "total_tokens": 0
+                }
+            }
             content_type = f'application/json;charset=utf-8'
-            content = json.dumps(ret.__dict__, ensure_ascii=False)
+            content = json.dumps(ret_dict, ensure_ascii=False)
             return Response(content=content, media_type=content_type)
