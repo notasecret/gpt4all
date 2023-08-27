@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1.0.0-experimental
+FROM ubuntu
+
+# Put first so anytime this file changes other cached layers are invalidated.
+COPY gpt4all-api/gpt4all_api/requirements.txt /requirements.txt
+
+COPY gpt4all-bindings/python /gpt4all/gpt4all-bindings/python
+COPY gpt4all-backend /gpt4all/gpt4all-backend
+
+RUN cd /gpt4all/gpt4all-backend/
+RUN mkdir /gpt4all/gpt4all-backend/build
+WORKDIR /gpt4all/gpt4all-backend/build
+RUN apt update
+RUN apt install -q -y build-essential libtool autoconf unzip wget cmake python3.11 python3-uvicorn python3-pip
+RUN cmake ..
+RUN cmake --build . --parallel --config Release
+WORKDIR /gpt4all/gpt4all-bindings/python
+RUN pip3 install -e .
+
+WORKDIR /
+RUN pip install --upgrade pip
+
+# Run various pip install commands with ssh keys from host machine.
+RUN pip install -r /requirements.txt && \
+  rm -Rf /root/.cache && rm -Rf /tmp/pip-install*
+
+# Finally, copy app and client.
+COPY gpt4all-api/gpt4all_api/app /app
+
+WORKDIR /app
+CMD python3 -m uvicorn main:app --reload --port 4891 --host 0.0.0.0

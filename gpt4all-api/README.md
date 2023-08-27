@@ -21,6 +21,12 @@ Then, change your working directory to `gpt4all/gpt4all-api` and build the FastA
 DOCKER_BUILDKIT=1 docker build -t gpt4all_api --progress plain -f gpt4all_api/Dockerfile.buildkit .
 ```
 
+Or, You may have to use the full build directly from source, if you have an M1 Apple arch, for example:
+```bash
+cd ..
+DOCKER_BUILDKIT=0 docker build -t gpt4all_api -f gpt4all-api/gpt4all_api/Dockerfile.full .
+```
+
 Then, start the backend with:
 
 ```bash
