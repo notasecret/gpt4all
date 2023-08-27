@@ -167,7 +167,7 @@ class LLModel:
         if self.model is not None:
             return llmodel.llmodel_required_mem(self.model, model_path_enc)
         else:
-            raise ValueError("Unable to instantiate model")
+            raise ValueError("Unable to instantiate model due to memory")
 
     def load_model(self, model_path: str) -> bool:
         """
@@ -188,7 +188,7 @@ class LLModel:
         if self.model is not None:
             llmodel.llmodel_loadModel(self.model, model_path_enc)
         else:
-            raise ValueError("Unable to instantiate model")
+            raise ValueError("Unable to instantiate model due to something else")
 
         filename = os.path.basename(model_path)
         self.model_name = os.path.splitext(filename)[0]
